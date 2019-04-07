@@ -26,9 +26,9 @@ use std::{
 /// These can be derived from std::time::Duration and be converted
 /// too std::time::Duration
 ///
-/// A Default implementation is provided which yields the number of seconds since the epoch from
+/// A `Default` implementation is provided which yields the number of seconds since the epoch from
 /// the system time's `now` value
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub struct Seconds(pub(crate) f64);
 
 impl Seconds {
@@ -65,6 +65,7 @@ impl Into<Duration> for Seconds {
     }
 }
 
+#[cfg(feature = "serde")]
 struct SecondsVisitor;
 
 #[cfg(feature = "serde")]
@@ -115,6 +116,21 @@ impl<'de> de::Deserialize<'de> for Seconds {
 #[cfg(test)]
 mod tests {
     use super::Seconds;
+    use std::time::Duration;
+
+    #[test]
+    fn seconds_default() {
+        let (now, default) = (Seconds::default(), Seconds::now());
+        assert_eq!(now.trunc(), default.trunc());
+    }
+
+    #[test]
+    fn seconds_duration_interop() {
+        let secs = Seconds(1_545_136_342.711_932);
+        let duration: Duration = secs.into();
+        let plus_one = duration + Duration::from_secs(1);
+        assert_eq!(Seconds::from(plus_one), Seconds(1_545_136_343.711_932));
+    }
 
     #[cfg(feature = "serde")]
     #[test]
