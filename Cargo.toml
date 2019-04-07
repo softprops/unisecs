@@ -12,6 +12,11 @@ license = "MIT"
 categories = ["epoch", "epoch-seconds", "unix", "unix-time"]
 readme = "README.md"
 
+[badges]
+coveralls = { repository = "softprops/unisecs" }
+maintenance = { status = "actively-developed" }
+travis-ci = { repository = "softprops/unisecs" }
+
 [dependencies]
 serde = { version = "1.0",  optional = true  }
 
