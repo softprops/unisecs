@@ -23,7 +23,7 @@ unisecs = "0.1"
 ```rust
 fn main() {
   println!(
-    "{}", unixsecs::Seconds::now()
+    "{}", unisecs::Seconds::now()
   );
 }
 ```
