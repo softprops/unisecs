@@ -3,13 +3,18 @@
 //!
 //! # Examples
 //!
+//! The following is roughly equivalent with `date -v+1S +%s`
+//!
 //! ```rust
 //! use std::time::Duration;
 //! use unisecs::Seconds;
 //!
-//! let now = Seconds::now();
-//! let future = now + Duration::from_secs(5);
-//! let past = now - Duration::from_secs(5);
+//! fn main() {
+//!   println!(
+//!     "{}",
+//!     Seconds::now() + Duration::from_secs(5)
+//!   );
+//! }
 //! ```
 //!
 //! # Features
@@ -34,7 +39,7 @@ use std::{
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
-/// Represents fractional seconds since the epoch
+/// Represents fractional seconds since the [unix epoch](https://en.wikipedia.org/wiki/Unix_time)
 /// These can be derived from [`std::time::Duration`](https://doc.rust-lang.org/std/time/struct.Duration.html) and be converted
 /// into [`std::time::Duration`](https://doc.rust-lang.org/std/time/struct.Duration.html)
 ///
@@ -65,8 +70,8 @@ impl Seconds {
     }
 
     /// truncate epoc time to remove fractional seconds
-    pub fn trunc(self) -> u64 {
-        self.0.trunc() as u64
+    pub fn trunc(self) -> Self {
+        Self(self.0.trunc())
     }
 
     /// transformation is kept private as we can make no guarantees
