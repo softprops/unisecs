@@ -88,6 +88,13 @@ impl Default for Seconds {
     }
 }
 
+impl Into<f64> for Seconds {
+    fn into(self) -> f64 {
+        let Seconds(secs) = self;
+        secs
+    }
+}
+
 /// Similar to `date -v+1S +%s`
 impl Add<Duration> for Seconds {
     type Output = Seconds;
@@ -176,6 +183,12 @@ mod tests {
     fn seconds_default() {
         let (now, default) = (Seconds::default(), Seconds::now());
         assert_eq!(now.trunc(), default.trunc());
+    }
+
+    #[test]
+    fn seconds_deref() {
+        let secs = Seconds(1_545_136_342.711_932);
+        let _f: f64 = secs.into();
     }
 
     #[test]
