@@ -130,7 +130,7 @@ impl<'de> de::Visitor<'de> for SecondsVisitor {
         &self,
         formatter: &mut fmt::Formatter,
     ) -> fmt::Result {
-        formatter.write_str("a string value")
+        formatter.write_str("floating point seconds")
     }
     fn visit_f64<E>(
         self,
@@ -220,10 +220,22 @@ mod tests {
 
     #[cfg(feature = "serde")]
     #[test]
-    fn seconds_deserialize() {
+    fn seconds_deserialize_floats() {
         assert_eq!(
             serde_json::from_slice::<Seconds>(b"1545136342.711932").expect("failed to serialize"),
             Seconds(1_545_136_342.711_932)
         );
+    }
+
+    #[cfg(feature = "serde")]
+    #[test]
+    fn seconds_fails_to_deserialize() {
+        match serde_json::from_slice::<Seconds>(b"{\"foo\":\"bar\"}") {
+            Err(err) => assert_eq!(
+                format!("{}", err),
+                "invalid type: map, expected floating point seconds at line 1 column 0"
+            ),
+            Ok(other) => panic!("unexpected result {}", other),
+        }
     }
 }
