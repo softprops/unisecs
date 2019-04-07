@@ -3,11 +3,13 @@
 //!
 //! # Examples
 //!
-//! ```
+//! ```rust
 //! use std::time::Duration;
 //! use unisecs::Seconds;
 //!
 //! let now = Seconds::now();
+//! let future = now + Duration::from_secs(5);
+//! let past = now - Duration::from_secs(5);
 //! ```
 //!
 //! # Features
@@ -43,18 +45,35 @@ use std::{
 #[derive(Debug, PartialEq, Copy, Clone)]
 pub struct Seconds(f64);
 
+impl fmt::Display for Seconds {
+    fn fmt(
+        &self,
+        f: &mut fmt::Formatter,
+    ) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
 impl Seconds {
     /// return the current time in seconds since the unix epoch (1-1-1970 midnight)
     pub fn now() -> Self {
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap_or_default()
-            .into()
+        Self::from_duration(
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap_or_default(),
+        )
     }
 
     /// truncate epoc time to remove fractional seconds
     pub fn trunc(self) -> u64 {
         self.0.trunc() as u64
+    }
+
+    /// transformation is kept private as we can make no guarantees
+    /// about whether a provided duration is anchored in any way to
+    /// unix time
+    fn from_duration(dur: Duration) -> Self {
+        Seconds(dur.as_secs() as f64 + (f64::from(dur.subsec_nanos()) / 1.0e9))
     }
 }
 
@@ -64,6 +83,7 @@ impl Default for Seconds {
     }
 }
 
+/// Similar to `date -v+1S +%s`
 impl Add<Duration> for Seconds {
     type Output = Seconds;
     fn add(
@@ -71,10 +91,11 @@ impl Add<Duration> for Seconds {
         rhs: Duration,
     ) -> Self::Output {
         let lhs: Duration = self.into();
-        Seconds::from(lhs + rhs)
+        Seconds::from_duration(lhs + rhs)
     }
 }
 
+/// Similar to `date -v-1S +%s`
 impl Sub<Duration> for Seconds {
     type Output = Seconds;
     fn sub(
@@ -82,13 +103,7 @@ impl Sub<Duration> for Seconds {
         rhs: Duration,
     ) -> Self::Output {
         let lhs: Duration = self.into();
-        Seconds::from(lhs - rhs)
-    }
-}
-
-impl From<Duration> for Seconds {
-    fn from(d: Duration) -> Self {
-        Seconds(d.as_secs() as f64 + (f64::from(d.subsec_nanos()) / 1.0e9))
+        Seconds::from_duration(lhs - rhs)
     }
 }
 
@@ -159,11 +174,16 @@ mod tests {
     }
 
     #[test]
+    fn seconds_display() {
+        let secs = Seconds(1_545_136_342.711_932);
+        assert_eq!(format!("{}", secs), "1545136342.711932");
+    }
+
+    #[test]
     fn seconds_duration_interop() {
         let secs = Seconds(1_545_136_342.711_932);
         let duration: Duration = secs.into();
-        let plus_one = duration + Duration::from_secs(1);
-        assert_eq!(Seconds::from(plus_one), Seconds(1_545_136_343.711_932));
+        assert_eq!(duration.as_secs(), 1_545_136_342);
     }
 
     #[test]
