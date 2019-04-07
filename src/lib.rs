@@ -1,5 +1,14 @@
 //! Provides a way of representing [unix time](https://en.wikipedia.org/wiki/Unix_time)
-//! in terms of seconds with fractional subseconds
+//! in terms of seconds with fractional subseconds.
+//!
+//! # Examples
+//!
+//! ```
+//! use std::time::Duration;
+//! use unisecs::Seconds;
+//!
+//! let now = Seconds::now();
+//! ```
 //!
 //! # Features
 //!
@@ -19,17 +28,20 @@ use serde::{de, ser, Serializer};
 
 use std::{
     fmt,
+    ops::{Add, Sub},
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
 /// Represents fractional seconds since the epoch
-/// These can be derived from std::time::Duration and be converted
-/// too std::time::Duration
+/// These can be derived from [`std::time::Duration`](https://doc.rust-lang.org/std/time/struct.Duration.html) and be converted
+/// into [`std::time::Duration`](https://doc.rust-lang.org/std/time/struct.Duration.html)
 ///
 /// A `Default` implementation is provided which yields the number of seconds since the epoch from
 /// the system time's `now` value
+///
+/// You can also and and subtract durations from Seconds.
 #[derive(Debug, PartialEq, Copy, Clone)]
-pub struct Seconds(pub(crate) f64);
+pub struct Seconds(f64);
 
 impl Seconds {
     /// return the current time in seconds since the unix epoch (1-1-1970 midnight)
@@ -41,7 +53,7 @@ impl Seconds {
     }
 
     /// truncate epoc time to remove fractional seconds
-    pub fn trunc(&self) -> u64 {
+    pub fn trunc(self) -> u64 {
         self.0.trunc() as u64
     }
 }
@@ -49,6 +61,28 @@ impl Seconds {
 impl Default for Seconds {
     fn default() -> Self {
         Seconds::now()
+    }
+}
+
+impl Add<Duration> for Seconds {
+    type Output = Seconds;
+    fn add(
+        self,
+        rhs: Duration,
+    ) -> Self::Output {
+        let lhs: Duration = self.into();
+        Seconds::from(lhs + rhs)
+    }
+}
+
+impl Sub<Duration> for Seconds {
+    type Output = Seconds;
+    fn sub(
+        self,
+        rhs: Duration,
+    ) -> Self::Output {
+        let lhs: Duration = self.into();
+        Seconds::from(lhs - rhs)
     }
 }
 
@@ -130,6 +164,24 @@ mod tests {
         let duration: Duration = secs.into();
         let plus_one = duration + Duration::from_secs(1);
         assert_eq!(Seconds::from(plus_one), Seconds(1_545_136_343.711_932));
+    }
+
+    #[test]
+    fn seconds_add_duration() {
+        let secs = Seconds(1_545_136_342.711_932);
+        assert_eq!(
+            secs + Duration::from_secs(1),
+            Seconds(1_545_136_343.711_932)
+        );
+    }
+
+    #[test]
+    fn seconds_sub_duration() {
+        let secs = Seconds(1_545_136_342.711_932);
+        assert_eq!(
+            secs - Duration::from_secs(1),
+            Seconds(1_545_136_341.711_932)
+        );
     }
 
     #[cfg(feature = "serde")]
