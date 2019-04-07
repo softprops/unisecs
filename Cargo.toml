@@ -7,9 +7,8 @@ description = "Unix epoch seconds"
 documentation = "https://docs.rs/unisecs/"
 homepage = "https://github.com/softprops/unisecs"
 repository = "https://github.com/softprops/unisecs"
-keywords = ["hyper", "github"]
+keywords = ["epoch", "epoch-seconds", "unix", "unix-time"]
 license = "MIT"
-categories = ["epoch", "epoch-seconds", "unix", "unix-time"]
 readme = "README.md"
 
 [badges]
