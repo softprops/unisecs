@@ -1,0 +1,22 @@
+[package]
+name = "unisecs"
+version = "0.1.0"
+authors = ["softprops <d.tangren@gmail.com>"]
+edition = "2018"
+description = "Unix epoch seconds"
+documentation = "https://docs.rs/unisecs/"
+homepage = "https://github.com/softprops/unisecs"
+repository = "https://github.com/softprops/unisecs"
+keywords = ["hyper", "github"]
+license = "MIT"
+categories = ["epoch", "epoch-seconds", "unix", "unix-time"]
+readme = "README.md"
+
+[dependencies]
+serde = { version = "1.0",  optional = true  }
+
+[dev-dependencies]
+serde_json = "1.0"
+
+[features]
+default = ["serde"]
