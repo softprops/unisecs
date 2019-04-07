@@ -4,7 +4,7 @@
 
 ## 🤔 About
 
-Why not [`std::time`](https://doc.rust-lang.org/std/time/index.html)? Rust's `std::time` package provides two representations of time `SystemTime` and `Instant`. Often times you will need to work with an api that requires sepecifically [unix time](https://en.wikipedia.org/wiki/Unix_time) which typically is represented in terms of seconds. `std::time` representations are general can can be made to represent unix time but not in a very straightforward or ergonomic way.
+Why not [`std::time`](https://doc.rust-lang.org/std/time/index.html)? Rust's `std::time` package provides two representations of time `SystemTime` and `Instant`. Often times you will need to work with an api that requires specifically [unix time](https://en.wikipedia.org/wiki/Unix_time) which typically is represented in terms of seconds. `std::time` representations are general can can be made to represent unix time but not in a very straightforward or ergonomic way.
 
 This crate does focuses specifically on that in addition to represented subsecond time for the purposes of capturing a more accuate measurement of a duration.
 
