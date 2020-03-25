@@ -69,7 +69,7 @@ impl Seconds {
         )
     }
 
-    /// truncate epoc time to remove fractional seconds
+    /// truncate epoch time to remove fractional seconds
     pub fn trunc(self) -> Self {
         Self(self.0.trunc())
     }
